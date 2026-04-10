@@ -175,113 +175,89 @@ const PhoneCollectScreen = ({ complexName, onLogout, onChangeComplex }: PhoneCol
     <div className="min-h-screen flex flex-col bg-background">
       <AppHeader complexName={complexName} onLogout={onLogout} />
 
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 p-4 lg:p-6 max-w-7xl mx-auto w-full">
-        {/* LEFT: Consent display for resident */}
-        <div className="flex flex-col gap-4">
-          <div className="bg-secondary rounded-xl p-6 lg:p-8 border border-border">
-            <h3 className="text-xl font-bold text-foreground mb-4">📋 동의 안내문</h3>
-            <pre className="whitespace-pre-wrap text-lg leading-relaxed text-foreground font-sans" style={{ fontSize: '18px' }}>
-              {CONSENT_TEXT}
-            </pre>
-          </div>
+      <div className="flex-1 flex flex-col gap-3 p-4 max-w-md mx-auto w-full">
+        {/* 동의 안내문 */}
+        <div className="bg-secondary rounded-xl p-4 max-h-36 overflow-y-auto">
+          <p className="text-xs text-foreground font-medium mb-2">📋 개인정보 수집 동의</p>
+          <pre className="whitespace-pre-wrap text-xs text-muted-foreground font-sans leading-relaxed">
+            {CONSENT_TEXT}
+          </pre>
         </div>
 
-        {/* RIGHT: Staff input area */}
-        <div className="flex flex-col gap-4">
-          <div className="bg-card rounded-xl border border-border p-6">
-            <h3 className="text-xl font-bold text-foreground mb-4">입주민 전화번호</h3>
+        {/* 전화번호 표시 — 고정 높이 */}
+        <div className="h-20 bg-secondary rounded-xl flex items-center justify-center gap-2">
+          <span className="text-3xl font-bold font-mono tracking-wider text-foreground">010</span>
+          <span className="text-3xl text-muted-foreground">-</span>
+          <span className={`text-3xl font-bold font-mono tracking-wider ${phone ? "text-foreground" : "text-muted-foreground/40"}`}>
+            {phone || "0000-0000"}
+          </span>
+        </div>
 
-            {/* Phone display */}
-            <div className="w-full bg-secondary rounded-xl px-6 py-5 mb-4 flex items-center justify-center gap-2">
-              <span className="font-bold tracking-wider font-mono text-foreground" style={{ fontSize: '32px' }}>
-                010
-              </span>
-              <span className="text-muted-foreground" style={{ fontSize: '32px' }}>-</span>
-              <span
-                className={`font-bold tracking-wider font-mono ${
-                  phone ? "text-foreground" : "text-muted-foreground/40"
-                }`}
-                style={{ fontSize: '32px' }}
-              >
-                {phone || "0000-0000"}
-              </span>
-            </div>
-
-            {/* Number pad */}
-            <div className="grid grid-cols-3 gap-2.5 mb-4">
-              {["1", "2", "3", "4", "5", "6", "7", "8", "9", "C", "0", "←"].map((key) => (
-                <button
-                  key={key}
-                  onClick={() => {
-                    if (key === "←") handleDelete();
-                    else if (key === "C") handleClear();
-                    else handleDigit(key);
-                  }}
-                  className={`h-14 rounded-lg font-semibold transition-all select-none touch-manipulation active:scale-95 ${
-                    key === "C"
-                      ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
-                      : key === "←"
-                      ? "bg-muted text-muted-foreground hover:bg-muted/80"
-                      : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
-                  }`}
-                  style={{ fontSize: '20px' }}
-                >
-                  {key}
-                </button>
-              ))}
-            </div>
-
-            {/* Submit button */}
+        {/* 숫자패드 */}
+        <div className="grid grid-cols-3 gap-2">
+          {["1", "2", "3", "4", "5", "6", "7", "8", "9", "C", "0", "←"].map((key) => (
             <button
-              onClick={handleSubmit}
-              disabled={!isValid || sending}
-              className="w-full py-4 rounded-xl font-bold transition-all touch-manipulation
-                bg-primary text-primary-foreground
-                hover:opacity-90 active:scale-[0.98]
-                disabled:opacity-40 disabled:cursor-not-allowed
-                flex items-center justify-center gap-2"
-              style={{ fontSize: '20px' }}
+              key={key}
+              onClick={() => {
+                if (key === "←") handleDelete();
+                else if (key === "C") handleClear();
+                else handleDigit(key);
+              }}
+              className={`h-14 rounded-xl font-semibold text-xl transition-all select-none touch-manipulation active:scale-95 ${
+                key === "C"
+                  ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
+                  : key === "←"
+                  ? "bg-muted text-muted-foreground hover:bg-muted/80"
+                  : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
+              }`}
             >
-              {sending ? (
-                <>
-                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  발송 중...
-                </>
-              ) : (
-                "동의 후 발송"
-              )}
+              {key}
             </button>
+          ))}
+        </div>
 
-            <button
-              onClick={onChangeComplex}
-              className="w-full text-muted-foreground mt-3 hover:text-foreground transition-colors"
-              style={{ fontSize: '16px' }}
-            >
-              ← 단지 변경
-            </button>
-          </div>
+        {/* 발송 버튼 */}
+        <button
+          onClick={handleSubmit}
+          disabled={!isValid || sending}
+          className="w-full py-4 rounded-xl font-bold text-lg transition-all touch-manipulation
+            bg-primary text-primary-foreground
+            hover:opacity-90 active:scale-[0.98]
+            disabled:opacity-40 disabled:cursor-not-allowed
+            flex items-center justify-center gap-2"
+        >
+          {sending ? (
+            <>
+              <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              발송 중...
+            </>
+          ) : (
+            "동의 후 발송"
+          )}
+        </button>
 
-          {/* Daily Log Panel */}
-          <div className="bg-card rounded-xl border border-border p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-foreground font-medium" style={{ fontSize: '18px' }}>
-                오늘 발송:
-              </span>
-              <span className="bg-primary text-primary-foreground font-bold px-3 py-1 rounded-full" style={{ fontSize: '18px' }}>
-                {todayCount}건
-              </span>
-            </div>
-            <button
-              onClick={() => setShowLogModal(true)}
-              className="text-accent hover:underline font-medium"
-              style={{ fontSize: '16px' }}
-            >
-              발송 내역 보기
-            </button>
-          </div>
+        {/* 단지 변경 */}
+        <button
+          onClick={onChangeComplex}
+          className="w-full text-muted-foreground text-sm hover:text-foreground transition-colors"
+        >
+          ← 단지 변경
+        </button>
+
+        {/* 발송 카운트 */}
+        <div className="flex items-center justify-between px-1">
+          <span className="text-sm text-foreground">
+            오늘 발송: <strong className="text-primary">{todayCount}건</strong>
+          </span>
+          <button
+            onClick={() => setShowLogModal(true)}
+            className="text-sm text-accent hover:underline font-medium"
+          >
+            발송 내역 보기
+          </button>
         </div>
       </div>
 
