@@ -2,6 +2,7 @@ import { useState } from "react";
 import LoginScreen from "./LoginScreen";
 import ComplexSelectScreen from "./ComplexSelectScreen";
 import PhoneCollectScreen from "./PhoneCollectScreen";
+import { loadTodayComplex } from "./ComplexSelectScreen";
 
 type Screen = "login" | "select" | "collect";
 
@@ -9,7 +10,15 @@ const Index = () => {
   const [screen, setScreen] = useState<Screen>("login");
   const [selectedComplex, setSelectedComplex] = useState("");
 
-  const handleLogin = () => setScreen("select");
+  const handleLogin = () => {
+    const saved = loadTodayComplex();
+    if (saved) {
+      setSelectedComplex(saved);
+      setScreen("collect");
+    } else {
+      setScreen("select");
+    }
+  };
 
   const handleSelectComplex = (name: string) => {
     setSelectedComplex(name);
