@@ -93,15 +93,16 @@ const PhoneCollectScreen = ({ complexName, onLogout, onChangeComplex }: PhoneCol
     saveTodayLog(log);
   }, [log]);
 
-  const formatPhone = (value: string) => {
-    const digits = value.replace(/\D/g, "").slice(0, 11);
-    if (digits.length <= 3) return digits;
-    if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+  // phone state now holds only the 8-digit suffix (with auto-hyphen)
+  const formatSuffix = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 8);
+    if (digits.length <= 4) return digits;
+    return `${digits.slice(0, 4)}-${digits.slice(4)}`;
   };
 
-  const rawDigits = phone.replace(/\D/g, "");
-  const isValid = /^010\d{7,8}$/.test(rawDigits);
+  const suffixDigits = phone.replace(/\D/g, "");
+  const rawDigits = "010" + suffixDigits;
+  const isValid = suffixDigits.length === 8;
 
   const addLog = (phoneLast4: string, status: "성공" | "실패", method?: "kakao" | "sms") => {
     const entry: LogEntry = {
@@ -157,13 +158,13 @@ const PhoneCollectScreen = ({ complexName, onLogout, onChangeComplex }: PhoneCol
   };
 
   const handleDigit = (digit: string) => {
-    if (rawDigits.length >= 11) return;
-    setPhone(formatPhone(rawDigits + digit));
+    if (suffixDigits.length >= 8) return;
+    setPhone(formatSuffix(suffixDigits + digit));
   };
 
   const handleDelete = () => {
-    if (rawDigits.length === 0) return;
-    setPhone(formatPhone(rawDigits.slice(0, -1)));
+    if (suffixDigits.length === 0) return;
+    setPhone(formatSuffix(suffixDigits.slice(0, -1)));
   };
 
   const handleClear = () => setPhone("");
@@ -191,14 +192,18 @@ const PhoneCollectScreen = ({ complexName, onLogout, onChangeComplex }: PhoneCol
             <h3 className="text-xl font-bold text-foreground mb-4">입주민 전화번호</h3>
 
             {/* Phone display */}
-            <div className="w-full bg-secondary rounded-xl px-6 py-5 text-center mb-4">
+            <div className="w-full bg-secondary rounded-xl px-6 py-5 mb-4 flex items-center justify-center gap-2">
+              <span className="font-bold tracking-wider font-mono text-foreground" style={{ fontSize: '32px' }}>
+                010
+              </span>
+              <span className="text-muted-foreground" style={{ fontSize: '32px' }}>-</span>
               <span
-                className={`text-3xl font-bold tracking-wider font-mono ${
+                className={`font-bold tracking-wider font-mono ${
                   phone ? "text-foreground" : "text-muted-foreground/40"
                 }`}
                 style={{ fontSize: '32px' }}
               >
-                {phone || "010-0000-0000"}
+                {phone || "0000-0000"}
               </span>
             </div>
 
