@@ -1,16 +1,42 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import LoginScreen from "./LoginScreen";
+import ComplexSelectScreen from "./ComplexSelectScreen";
+import PhoneCollectScreen from "./PhoneCollectScreen";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
-  return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
-    </div>
-  );
+type Screen = "login" | "select" | "collect";
+
+const Index = () => {
+  const [screen, setScreen] = useState<Screen>("login");
+  const [selectedComplex, setSelectedComplex] = useState("");
+
+  const handleLogin = () => setScreen("select");
+
+  const handleSelectComplex = (name: string) => {
+    setSelectedComplex(name);
+    setScreen("collect");
+  };
+
+  const handleLogout = () => {
+    setScreen("login");
+    setSelectedComplex("");
+  };
+
+  const handleChangeComplex = () => setScreen("select");
+
+  switch (screen) {
+    case "login":
+      return <LoginScreen onLogin={handleLogin} />;
+    case "select":
+      return <ComplexSelectScreen onSelect={handleSelectComplex} onLogout={handleLogout} />;
+    case "collect":
+      return (
+        <PhoneCollectScreen
+          complexName={selectedComplex}
+          onLogout={handleLogout}
+          onChangeComplex={handleChangeComplex}
+        />
+      );
+  }
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
