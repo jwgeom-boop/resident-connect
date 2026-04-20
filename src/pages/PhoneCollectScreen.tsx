@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import AppHeader from "@/components/AppHeader";
 import { toast } from "sonner";
 import SendLogModal from "@/components/SendLogModal";
+import { sendInvite } from "@/lib/api";
 
 /*
 Edge Function: send-kakao
@@ -72,15 +73,13 @@ function saveTodayLog(entries: LogEntry[]) {
 }
 
 async function sendKakao(phone: string, complex: string): Promise<{ success: boolean; method: "kakao" | "sms"; error?: string }> {
-  // MVP: mock success response. Replace with real Supabase Edge Function call:
-  // const { data, error } = await supabase.functions.invoke('send-kakao', { body: { phone, complex } });
-  await new Promise((r) => setTimeout(r, 1200));
-  
-  // Simulate 90% success rate for demo
-  if (Math.random() > 0.1) {
-    return { success: true, method: "kakao" };
+  try {
+    const res = await sendInvite({ phone, complexName: complex });
+    const method = res.method?.toLowerCase() === "kakao" ? "kakao" : "sms";
+    return { success: res.success, method, error: res.error || undefined };
+  } catch (e) {
+    return { success: false, method: "sms", error: e instanceof Error ? e.message : "네트워크 오류" };
   }
-  return { success: false, method: "kakao", error: "알림톡 발송 실패" };
 }
 
 const PhoneCollectScreen = ({ complexName, onLogout, onChangeComplex }: PhoneCollectScreenProps) => {
