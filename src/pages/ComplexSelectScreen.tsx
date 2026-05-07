@@ -23,6 +23,7 @@ const COMPLEX_LIST: Complex[] = [
   { id: 1, name: "스마트 아파트", inspectionStart: "2026-04-10", inspectionEnd: "2026-04-12" },
   { id: 2, name: "힐스테이트 OO", inspectionStart: "2026-04-18", inspectionEnd: "2026-04-20" },
   { id: 3, name: "래미안 OO", inspectionStart: "2026-05-02", inspectionEnd: "2026-05-04" },
+  { id: 4, name: "샘플 아파트", inspectionStart: "2026-05-07", inspectionEnd: "2026-05-17" },
 ];
 
 type Status = "진행중" | "예정" | "완료";
